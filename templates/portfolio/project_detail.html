@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} - Portfolio{% endblock %}
+
+{% block content %}
+<section id="project-detail" class="project-detail" style="padding-top: 120px; padding-bottom: 80px;">
+    <div class="container">
+        <!-- Project Header -->
+        <div class="section-header">
+            <h2>{{ project.title }}</h2>
+            <p><strong>Client:</strong> {{ project.client|default:"N/A" }} | <strong>Category:</strong> {{ project.get_category_display }} | <strong>Completed:</strong> {{ project.completion_date|date:"F Y"|default:"N/A" }}</p>
+        </div>
+        
+        <!-- Main Project Image -->
+        {% if project.image %}
+        <div class="project-main-image" style="margin-bottom: 40px; text-align: center;">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" style="max-width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        </div>
+        {% endif %}
+
+        <!-- Project Description -->
+        <div class="project-description" style="max-width: 800px; margin: 0 auto 40px auto; line-height: 1.8;">
+            {{ project.description|linebreaks }}
+        </div>
+
+        <!-- Technologies Used -->
+        {% if project.technologies_used %}
+        <div class="project-technologies" style="text-align: center; margin-bottom: 40px;">
+            <h4>Technologies Used:</h4>
+            <div class="skill-tags" style="justify-content: center;">
+                {% for tech in project.technologies_used %}
+                    <span class="skill-tag">{{ tech }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Project URL -->
+        {% if project.project_url %}
+        <div class="project-url" style="text-align: center; margin-bottom: 60px;">
+            <a href="{{ project.project_url }}" target="_blank" class="btn btn-primary">Visit Project Website</a>
+        </div>
+        {% endif %}
+
+        <!-- Additional Images Gallery -->
+        {% if project.images.all %}
+        <div class="additional-images">
+            <h3 style="text-align: center; margin-bottom: 40px;">Project Gallery</h3>
+            <div class="portfolio-grid">
+                {% for p_image in project.images.all %}
+                <div class="portfolio-item">
+                    <div class="portfolio-image">
+                        <img src="{{ p_image.image.url }}" alt="{{ p_image.caption|default:project.title }}">
+                        <div class="portfolio-overlay">
+                            <h4>{{ p_image.caption|default:"Project Image" }}</h4>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Related Projects -->
+        {% if related_projects %}
+        <div class="related-projects" style="margin-top: 80px;">
+            <h3 style="text-align: center; margin-bottom: 40px;">Related Projects</h3>
+            <div class="portfolio-grid">
+                {% for rel_project in related_projects %}
+                <a href="{{ rel_project.get_absolute_url }}" class="portfolio-item" data-category="{{ rel_project.category }}">
+                    <div class="portfolio-image">
+                        {% if rel_project.image %}
+                            <img src="{{ rel_project.image.url }}" alt="{{ rel_project.title }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x300/4F46E5/FFFFFF?text={{ rel_project.title|urlencode }}" alt="{{ rel_project.title }}">
+                        {% endif %}
+                        <div class="portfolio-overlay">
+                            <h4>{{ rel_project.title }}</h4>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %} 

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Services - {{ site_settings.site_name|default:"FreelancePro" }}{% endblock %}
+
+{% block content %}
+<!-- Services Section -->
+<section id="services" class="services" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Services</h2>
+            <p>Comprehensive solutions for all your creative and digital needs</p>
+        </div>
+        <div class="services-grid">
+            {% for service in services %}
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="{{ service.icon_class }}"></i>
+                </div>
+                <h3>{{ service.title }}</h3>
+                <p>{{ service.description }}</p>
+                {% if service.features %}
+                <ul class="service-features">
+                    {% for feature in service.features %}
+                        <li>
+                            {% if feature.feature %}
+                                {{ feature.feature|safe }}
+                            {% else %}
+                                {{ feature|safe }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="section-header">
+                <p>No services are available at the moment. Please check back later.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %} 

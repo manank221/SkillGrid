@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Contact Me - {{ site_settings.site_name|default:"FreelancePro" }}{% endblock %}
+
+{% block content %}
+<!-- Contact Section -->
+<section id="contact" class="contact" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Get In Touch</h2>
+            <p>Ready to start your project? Let's discuss how I can help bring your ideas to life!</p>
+        </div>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Let's Work Together</h3>
+                <p>I'm always excited to take on new projects and help clients achieve their goals. Whether you need a complete website redesign, compelling content, or stunning graphics, I'm here to help.</p>
+                <div class="contact-details">
+                    {% if site_settings.contact_email %}
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>{{ site_settings.contact_email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if site_settings.contact_phone %}
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>{{ site_settings.contact_phone }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Response Time</h4>
+                            <p>Within 24 hours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form">
+                <form id="contactForm" method="post" action="{% url 'contact:contact' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" id="id_name" name="name" class="form-control" placeholder=" " required minlength="2">
+                        <label for="id_name">Full Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="id_email" name="email" class="form-control" placeholder=" " required>
+                        <label for="id_email">Email Address</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="id_phone_number" name="phone_number" class="form-control" placeholder=" ">
+                        <label for="id_phone_number">Phone Number (optional)</label>
+                    </div>
+                    <div class="form-group">
+                        <select id="id_service" name="service" class="form-control" required>
+                            <option value="" disabled selected>Select a Service</option>
+                            <option value="web-design">Web Design</option>
+                            <option value="content-writing">Content Writing</option>
+                            <option value="graphic-design">Graphic Design</option>
+                            <option value="logo-design">Logo Design</option>
+                            <option value="translation">Translation</option>
+                            <option value="counselling">Counselling</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <label for="id_service">Service</label>
+                    </div>
+                    <div class="form-group">
+                        <select id="id_budget" name="budget" class="form-control">
+                            <option value="" disabled selected>Budget (optional)</option>
+                            <option value="under-500">Under $500</option>
+                            <option value="500-1000">$500 - $1,000</option>
+                            <option value="1000-2500">$1,000 - $2,500</option>
+                            <option value="2500-5000">$2,500 - $5,000</option>
+                            <option value="over-5000">Over $5,000</option>
+                        </select>
+                        <label for="id_budget">Budget</label>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="id_message" name="message" class="form-control" rows="5" placeholder=" " required minlength="20"></textarea>
+                        <label for="id_message">Tell me about your project, goals, and any specific requirements...</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+
+        fetch("{% url 'contact:contact_ajax' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                form.reset();
+            } else {
+                // Clear previous errors
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                for (const field in data.errors) {
+                    const input = document.getElementById(`id_${field}`);
+                    const errorList = data.errors[field];
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const errorContainer = document.createElement('div');
+                        errorContainer.className = 'invalid-feedback d-block';
+                        let errorHTML = '';
+                        errorList.forEach(err => {
+                             errorHTML += `<p class="mb-0">${err}</p>`;
+                        });
+                        errorContainer.innerHTML = errorHTML;
+                        input.parentNode.appendChild(errorContainer);
+                    }
+                }
+                showNotification('Please correct the errors below.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An unexpected error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %} 

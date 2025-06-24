@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ about.title }} - {{ site_settings.site_name|default:"FreelancePro" }}{% endblock %}
+
+{% block content %}
+<!-- About Section -->
+<section id="about-page" class="about-page" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        {% if about %}
+        <div class="section-header">
+            <h2>About Us</h2>
+            {% if about.subtitle %}
+                <p>{{ about.subtitle }}</p>
+            {% endif %}
+        </div>
+        <div class="about-content">
+            <div class="about-text">
+                <p>{{ about.content|linebreaks }}</p>
+                {% if about.skills %}
+                <div class="skills">
+                    <h3>Skills & Expertise</h3>
+                    <div class="skill-tags">
+                        {% for skill in about.skills %}
+                            <span class="skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="about-stats">
+                <div class="stat-item">
+                    <h3>{{ about.experience_years|default:"5" }}+</h3>
+                    <p>Years Experience</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.projects_completed|default:"50" }}+</h3>
+                    <p>Projects Completed</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.happy_clients|default:"30" }}+</h3>
+                    <p>Happy Clients</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.satisfaction_rate|default:"100" }}%</h3>
+                    <p>Client Satisfaction</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="section-header">
+            <h2>About Me</h2>
+            <p>Information about me is not available at the moment. Please check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %} 

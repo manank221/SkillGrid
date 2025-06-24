@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load myfilters %}
+
+{% block title %}{{ service.title }} | {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<p style="color:red;">TEMPLATE TEST MARKER</p>
+<section class="service-detail-page">
+    <div class="container">
+        <div class="service-detail-header">
+            <h1>{{ service.title }}</h1>
+            <i class="{{ service.icon_class }} fa-3x"></i>
+        </div>
+        
+        <div class="service-detail-content">
+            <div class="description-section">
+                <h2>Service Description</h2>
+                <p>{{ service.detailed_description|linebreaks }}</p>
+            </div>
+            
+            <div class="features-section">
+                <h2>Features</h2>
+                <p>Test safe: {{ '<strong>Bold Test</strong>'|safe }}</p>
+                <ul>
+                    {% for feature in service.features %}
+                        <li>
+                            {% if feature.feature %}
+                                {{ feature.feature|safe }}
+                            {% else %}
+                                {{ feature|safe }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if service.price_info %}
+            <div class="pricing-section">
+                <h2>Pricing</h2>
+                {% with prices=service.price_info|from_json %}
+                    {% if prices %}
+                        <table class="pricing-table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in prices %}
+                                    <tr>
+                                        <td>{{ item.service }}</td>
+                                        <td>{{ item.description }}</td>
+                                        <td>{{ item.price }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <pre>{{ service.price_info }}</pre>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="back-to-services">
+            <a href="{% url 'core:home' %}#services" class="btn">Back to Services</a>
+        </div>
+    </div>
+</section>
+{% endblock %} 

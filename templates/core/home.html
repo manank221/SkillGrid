@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">{{ site_settings.hero_title|default:"Let's Build your Success -- One Word & Design at a Time" }}</h1>
+            <p class="hero-subtitle">{{ site_settings.hero_subtitle|default:"Transforming ideas into exceptional digital experiences" }}</p>
+            <p class="hero-description">
+                {{ site_settings.hero_description|default:"Specializing in web design, content writing, graphic design, logo creation, poster design, and translation services. Let's bring your vision to life!" }}
+            </p>
+            <div class="hero-buttons">
+                <a href="{% url 'contact:contact' %}" class="btn btn-primary">Get Started</a>
+                <a href="{% url 'portfolio:portfolio_list' %}" class="btn btn-secondary">View Work</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="hero-graphic">
+                <i class="fas fa-palette"></i>
+                <i class="fas fa-code"></i>
+                <i class="fas fa-pen-fancy"></i>
+                <i class="fas fa-language"></i>
+                <i class="fas fa-paint-brush"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quotes Section -->
+<section class="quotes-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Today's Inspirational Quote</h2>
+            <p>Words to motivate and inspire your journey</p>
+        </div>
+        <div class="quotes-grid">
+            <blockquote class="quote-card">
+                <p>"{{ daily_quote }}"</p>
+                <footer>- {{ daily_author }}</footer>
+            </blockquote>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services" class="services">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Services</h2>
+            <p>Comprehensive solutions for all your creative and digital needs</p>
+        </div>
+        <div class="services-grid">
+            {% for service in services %}
+            <a href="{% url 'core:service_detail' slug=service.slug %}" class="service-card-link">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="{{ service.icon_class }}"></i>
+                    </div>
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.description }}</p>
+                    <ul class="service-features">
+                        {% for feature in service.features %}
+                            <li>
+                                {% if feature.feature %}
+                                    {{ feature.feature|safe }}
+                                {% else %}
+                                    {{ feature|safe }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </a>
+            {% empty %}
+            <!-- Default services if none in database -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3>Web Design</h3>
+                <p>Modern, responsive websites that engage your audience and drive results. From landing pages to full e-commerce solutions.</p>
+                <ul class="service-features">
+                    <li>Responsive Design</li>
+                    <li>UI/UX Optimization</li>
+                    <li>SEO-Friendly</li>
+                    <li>Fast Loading</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-pen-fancy"></i>
+                </div>
+                <h3>Content Writing</h3>
+                <p>Compelling, SEO-optimized content that tells your story and connects with your audience.</p>
+                <ul class="service-features">
+                    <li>Blog Posts & Articles</li>
+                    <li>Website Copy</li>
+                    <li>Marketing Materials</li>
+                    <li>SEO Optimization</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Graphic Design</h3>
+                <p>Eye-catching visuals that strengthen your brand identity and communicate your message effectively.</p>
+                <ul class="service-features">
+                    <li>Brand Identity</li>
+                    <li>Social Media Graphics</li>
+                    <li>Print Materials</li>
+                    <li>Digital Assets</li>
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio">
+    <div class="container">
+        <div class="section-header">
+            <h2>Portfolio</h2>
+            <p>Showcasing my latest work and creative projects</p>
+        </div>
+        <div class="portfolio-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web Design</button>
+            <button class="filter-btn" data-filter="graphic">Graphic Design</button>
+            <button class="filter-btn" data-filter="content">Content</button>
+            <button class="filter-btn" data-filter="logo">Logo</button>
+        </div>
+        <div class="portfolio-grid">
+            <!-- Always show the e-commerce website as the first item -->
+            <div class="portfolio-item" data-category="web">
+                <div class="portfolio-image">
+                    <img src="{% static 'images/e_commerce_landing_page.jpg' %}" alt="E-commerce Website Design">
+                    <div class="portfolio-overlay">
+                        <h4>E-commerce Website</h4>
+                        <p>Modern responsive design with shopping cart functionality</p>
+                    </div>
+                </div>
+            </div>
+            
+            {% for project in projects %}
+            <div class="portfolio-item" data-category="{{ project.category }}">
+                <div class="portfolio-image">
+                    {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x300/4F46E5/FFFFFF?text={{ project.title|urlencode }}" alt="{{ project.title }}">
+                    {% endif %}
+                    <div class="portfolio-overlay">
+                        <h4>{{ project.title }}</h4>
+                        <p>{{ project.description|truncatewords:15 }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Additional default portfolio items if no projects in database -->
+            <div class="portfolio-item" data-category="graphic">
+                <div class="portfolio-image">
+                    <img src="https://via.placeholder.com/400x300/10B981/FFFFFF?text=Brand+Identity" alt="Brand Identity Design">
+                    <div class="portfolio-overlay">
+                        <h4>Brand Identity Package</h4>
+                        <p>Complete brand identity including logo, colors, and guidelines</p>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-item" data-category="logo">
+                <div class="portfolio-image">
+                    <img src="https://via.placeholder.com/400x300/F59E0B/FFFFFF?text=Logo+Design" alt="Logo Design">
+                    <div class="portfolio-overlay">
+                        <h4>Tech Startup Logo</h4>
+                        <p>Minimalist logo design for innovative tech company</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center" style="margin-top: 2rem;">
+            <a href="{% url 'portfolio:portfolio_list' %}" class="btn btn-primary">View All Projects</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+{% if about %}
+<section id="about" class="about">
+    <div class="container">
+        <div class="section-header">
+            <h2>About Us</h2>
+            {% if about %}
+            <p>{{ about.subtitle }}</p>
+            {% endif %}
+        </div>
+        <div class="about-content">
+            <div class="about-text">
+                <h2>{{ about.title }}</h2>
+                {% if about.subtitle %}
+                    <p class="lead">{{ about.subtitle }}</p>
+                {% endif %}
+                <p>{{ about.content }}</p>
+                {% if about.skills %}
+                <div class="skills">
+                    <h3>Skills & Expertise</h3>
+                    <div class="skill-tags">
+                        {% for skill in about.skills %}
+                            <span class="skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="about-stats">
+                <div class="stat-item">
+                    <h3>{{ about.experience_years|default:"5" }}+</h3>
+                    <p>Years Experience</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.projects_completed|default:"50" }}+</h3>
+                    <p>Projects Completed</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.happy_clients|default:"30" }}+</h3>
+                    <p>Happy Clients</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ about.satisfaction_rate|default:"100" }}%</h3>
+                    <p>Client Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Testimonials Section -->
+{% if testimonials %}
+<section class="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <h2>What Clients Say</h2>
+            <p>Testimonials from satisfied clients</p>
+        </div>
+        <div class="testimonials-grid">
+            {% for testimonial in testimonials %}
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"{{ testimonial.content }}"</p>
+                </div>
+                <div class="testimonial-author">
+                    <h4>{{ testimonial.client_name }}</h4>
+                    <p>{{ testimonial.client_position }}, {{ testimonial.client_company }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="container">
+        <div class="section-header">
+            <h2>Get In Touch</h2>
+            <p>Ready to start your project? Let's discuss how I can help bring your ideas to life!</p>
+        </div>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Let's Work Together</h3>
+                <p>I'm always excited to take on new projects and help clients achieve their goals. Whether you need a complete website redesign, compelling content, or stunning graphics, I'm here to help.</p>
+                <div class="contact-details">
+                    {% if site_settings.contact_email %}
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>{{ site_settings.contact_email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if site_settings.contact_phone %}
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>{{ site_settings.contact_phone }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Response Time</h4>
+                            <p>Within 24 hours</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form">
+                <form id="contactForm" method="post" action="{% url 'core:home' %}#contact">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}">Full Name *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="error-message">{{ form.name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email Address *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="error-message">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}">Phone Number (Optional)</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="error-message">{{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.service.id_for_label }}">Service Needed *</label>
+                        {{ form.service }}
+                        {% if form.service.errors %}
+                            <div class="error-message">{{ form.service.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.budget.id_for_label }}">Budget Range</label>
+                        {{ form.budget }}
+                        {% if form.budget.errors %}
+                            <div class="error-message">{{ form.budget.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}">Project Details *</label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                            <div class="error-message">{{ form.message.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

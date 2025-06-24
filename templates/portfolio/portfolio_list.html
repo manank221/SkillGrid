@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Portfolio - {{ site_settings.site_name|default:"FreelancePro" }}{% endblock %}
+
+{% block content %}
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        <div class="section-header">
+            <h2>Portfolio</h2>
+            <p>Showcasing my latest work and creative projects</p>
+        </div>
+        
+        <!-- Portfolio Filters -->
+        <div class="portfolio-filters">
+            <a href="{% url 'portfolio:portfolio_list' %}" class="filter-btn {% if not current_category %}active{% endif %}">All</a>
+            {% for category_id, category_name in categories %}
+                <a href="?category={{ category_id }}" class="filter-btn {% if current_category == category_id %}active{% endif %}">{{ category_name }}</a>
+            {% endfor %}
+        </div>
+        
+        <!-- Portfolio Grid -->
+        <div class="portfolio-grid">
+            {% for project in projects %}
+            <a href="{{ project.get_absolute_url }}" class="portfolio-item" data-category="{{ project.category }}">
+                <div class="portfolio-image">
+                    {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x300/4F46E5/FFFFFF?text={{ project.title|urlencode }}" alt="{{ project.title }}">
+                    {% endif %}
+                    <div class="portfolio-overlay">
+                        <h4>{{ project.title }}</h4>
+                        <p>{{ project.description|truncatewords:15 }}</p>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="section-header">
+                <p>No projects available in this category. Please check back later.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="pagination" style="margin-top: 4rem; text-align: center;">
+            <ul class="pagination-list" style="display: inline-flex; list-style: none; padding: 0; gap: 1rem;">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn">&laquo; Previous</a></li>
+                {% endif %}
+                
+                <li class="current">
+                    <span class="btn btn-primary">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}" class="btn">Next &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %} 
